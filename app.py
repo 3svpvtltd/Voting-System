@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import sqlite3
-
+import uuid
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # change for production
 
@@ -8,6 +8,19 @@ def get_db_connection():
     conn = sqlite3.connect("database.db")
     conn.row_factory = sqlite3.Row
     return conn
+
+@app.before_request
+def assign_user():
+    user_id = request.cookies.get('user_uuid')
+    if not user_id:
+        user_id = str(uuid.uuid4())
+    session['user_id'] = user_id  # still use session for convenience
+
+@app.after_request
+def set_cookie(response):
+    if 'user_id' in session:
+        response.set_cookie('user_uuid', session['user_id'], max_age=60*60*24*365*2)  # 2 years
+    return response
 
 @app.route("/")
 def index():
