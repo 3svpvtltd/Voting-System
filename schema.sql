@@ -19,9 +19,8 @@ CREATE TABLE projects (
 
 CREATE TABLE votes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    project_id INTEGER,
+    user_id TEXT NOT NULL,
+    project_id INTEGER NOT NULL,
     UNIQUE(user_id, project_id),
-    FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (project_id) REFERENCES projects (id)
 );
